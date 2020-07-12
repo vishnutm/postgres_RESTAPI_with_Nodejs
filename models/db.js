@@ -1,6 +1,7 @@
 const { pool } = require('../models/dbconnection');
 
 const dotenv = require('dotenv');
+const { request } = require('express');
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ async function createUserTable() {
 	client
 		.query(queryText)
 		.then((res) => {
-			console.log('Table created');
+			console.log('User Table created');
 		})
 		.catch((err) => {
 			console.log('This' + err);
@@ -47,32 +48,46 @@ const insertUser = (request, response) => {
 Get the all the users details
 */
 const getUsers = (request, response) => {
-    pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).json(results.rows)
-    })
-  }
+	pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).json(results.rows);
+	});
+};
 
-  /*
+/*
 Get the user details by id
   */
 
- const getUserById = (request, response) => {
-    const id = parseInt(request.params.id)
-  
-    pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).json(results.rows)
-    })
-  }
+const getUserById = (request, response) => {
+	const id = parseInt(request.params.id);
+
+	pool.query('SELECT * FROM users WHERE id = $1', [ id ], (error, results) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).json(results.rows);
+	});
+};
+
+const updateUser = (request, response) => {
+	const id = parseInt(request.params.id);
+	let name = request.body.name;
+	let email = request.body.email;
+
+	pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [ name, email, id ], (error, result) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).send(`user modified with ID: ${id}`);
+	});
+};
 
 module.exports = {
 	createUserTable,
-    insertUser,
-    getUsers,
-    getUserById
+	insertUser,
+	getUsers,
+	getUserById,
+	updateUser
 };
