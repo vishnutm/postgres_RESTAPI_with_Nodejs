@@ -71,6 +71,10 @@ const getUserById = (request, response) => {
 	});
 };
 
+/*
+Update the user details by ID
+*/
+
 const updateUser = (request, response) => {
 	const id = parseInt(request.params.id);
 	let name = request.body.name;
